@@ -67,6 +67,8 @@ func main() {
 		Title       string
 		Description string
 		CoverImage  string
+		Logo        string
+		Navigation  string
 	}
 	type Inventory struct {
 		Lang        string
@@ -100,6 +102,7 @@ func main() {
 			Title:       "Victor's blog",
 			Description: "This is Victor's blog",
 			CoverImage:  "https://static.ghost.org/v2.0.0/images/welcome-to-ghost.jpg",
+			Navigation:  "victor's navigation",
 		},
 	}
 	tmpl, err := template.New("index.tpl.html").Funcs(funcMap).ParseFiles("index.tpl.html")

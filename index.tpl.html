@@ -2,6 +2,18 @@
 
 <header id="blog-header"{{if .Site.CoverImage}} class="has-cover"{{end}}>
 	<div class="inner">
+		<nav id="navigation">
+			{{if .Site.Logo}}
+			<span class="blog-logo">
+				<a href="{{.Site.Url}}"><img src="{{.Site.Logo}}" alt="Blog Logo" /></a>
+			</span>
+			{{end}}
+			{{if .Site.Navigation}}
+			<span id="menu-button" class="nav-button">
+				<a class="menu-button"><i class="ic ic-menu"></i> Menu</a>
+			</span>
+			{{end}}
+		</nav>
 		<h1 class="blog-name"><a href="{{.Site.Url}}">{{.Site.Title}}</a></h1>
 		{{if .Site.Description}}
 		<span class="blog-description">{{.Site.Description}}</span>
