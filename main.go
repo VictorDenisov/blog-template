@@ -62,7 +62,7 @@ func img_urlFunc(url string, size string) string {
 }
 
 func main() {
-	type Twitter struct {
+	type Link struct {
 		Title string
 		Url   string
 	}
@@ -74,7 +74,8 @@ func main() {
 		CoverImage  string
 		Logo        string
 		Navigation  string
-		Twitter     *Twitter
+		Twitter     *Link
+		Github      *Link
 	}
 	type Inventory struct {
 		Lang        string
@@ -109,9 +110,13 @@ func main() {
 			Description: "This is Victor's blog",
 			CoverImage:  "https://static.ghost.org/v2.0.0/images/welcome-to-ghost.jpg",
 			Navigation:  "victor's navigation",
-			Twitter: &Twitter{
+			Twitter: &Link{
 				Title: "@VictorDenisov",
 				Url:   "https://twitter.com/victordenisov",
+			},
+			Github: &Link{
+				Title: "VictorDenisov",
+				Url:   "https://github.com/VictorDenisov",
 			},
 		},
 	}
