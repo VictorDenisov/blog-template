@@ -44,12 +44,8 @@ func ghost_headFunc() string {
 	return string(buffer.Bytes())
 }
 
-func ghost_footFunc() string {
-	return ""
-}
-
 func assetFunc(path string) string {
-	return path
+	return "assets/" + path
 }
 
 func body_classFunc() string {
@@ -63,18 +59,35 @@ func navigationFunc() string {
 
 func main() {
 	type Inventory struct {
-		Lang string
+		Lang        string
+		MetaTitle   string
+		BlogUrl     string
+		CurrentPath string
 	}
-	sweaters := Inventory{"eng"}
-	tmpl, err := template.New("index.tpl.html").Funcs(map[string]interface{}{
-		"meta_title": meta_titleFunc,
-		"ghost_head": ghost_headFunc,
-		"ghost_foot": ghost_footFunc,
+	funcMap := map[string]interface{}{
 		"asset":      assetFunc,
 		"body_class": body_classFunc,
 		"navigation": navigationFunc,
-		//}).ParseFiles("index.tpl.html")
-	}).ParseFiles("index.tpl.html")
+	}
+	header, err := template.New("header.tpl.html").Funcs(funcMap).ParseFiles("header.tpl.html")
+	if err != nil {
+		panic(err)
+	}
+	footer, err := template.New("footer.tpl.html").Funcs(funcMap).ParseFiles("footer.tpl.html")
+	if err != nil {
+		panic(err)
+	}
+
+	sweaters := Inventory{
+		Lang:        "eng",
+		MetaTitle:   "meta title",
+		BlogUrl:     "http://localhost",
+		CurrentPath: "/",
+	}
+	tmpl, err := template.New("index.tpl.html").Funcs(funcMap).ParseFiles("index.tpl.html")
+
+	tmpl.AddParseTree("header.tpl.html", header.Tree)
+	tmpl.AddParseTree("footer.tpl.html", footer.Tree)
 	if err != nil {
 		panic(err)
 	}
