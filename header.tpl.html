@@ -16,7 +16,17 @@
 
 <body class="{{body_class}}">
 
-	{{navigation}}
+	<nav id="menu">
+		<a class="close-button">Close</a>
+		<div class="nav-wrapper">
+			<p class="nav-label">Menu</p>
+			<ul>
+			{{if .Site.Twitter}}
+			<li class="nav-twitter"><a href="{{.Site.Twitter.Url}}" title="{{.Site.Twitter.Title}}"><i class="ic ic-twitter"></i> Twitter</a></li>
+			{{end}}
+			</ul>
+		</div>
+	</nav>
 
 	<section id="wrapper">
 		<a class="hidden-close"></a>

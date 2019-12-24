@@ -62,6 +62,11 @@ func img_urlFunc(url string, size string) string {
 }
 
 func main() {
+	type Twitter struct {
+		Title string
+		Url   string
+	}
+
 	type Site struct {
 		Url         string
 		Title       string
@@ -69,6 +74,7 @@ func main() {
 		CoverImage  string
 		Logo        string
 		Navigation  string
+		Twitter     *Twitter
 	}
 	type Inventory struct {
 		Lang        string
@@ -103,6 +109,10 @@ func main() {
 			Description: "This is Victor's blog",
 			CoverImage:  "https://static.ghost.org/v2.0.0/images/welcome-to-ghost.jpg",
 			Navigation:  "victor's navigation",
+			Twitter: &Twitter{
+				Title: "@VictorDenisov",
+				Url:   "https://twitter.com/victordenisov",
+			},
 		},
 	}
 	tmpl, err := template.New("index.tpl.html").Funcs(funcMap).ParseFiles("index.tpl.html")
