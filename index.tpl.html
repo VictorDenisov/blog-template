@@ -1,4 +1,32 @@
 {{template "header.tpl.html" .}}
-		<!-- TODO BODY -->
+
+<header id="blog-header"{{if .Site.CoverImage}} class="has-cover"{{end}}>
+	<div class="inner">
+		<h1 class="blog-name"><a href="{{.Site.Url}}">{{.Site.Title}}</a></h1>
+		{{if .Site.Description}}
+		<span class="blog-description">{{.Site.Description}}</span>
+		{{end}}
+
+		{{if .Site.CoverImage}}
+		<div class="blog-cover cover">
+			<img
+			srcset="{{img_url .Site.CoverImage "s"}} 320w,
+				{{img_url .Site.CoverImage "m"}} 640w,
+				{{img_url .Site.CoverImage "l"}} 960w,
+				{{img_url .Site.CoverImage "xl"}} 1920w"
+		        src="{{img_url .Site.CoverImage "xl"}}"
+			alt="{{.Site.Title}}" />
+		</div>
+		{{end}}
+	</div>
+</header>
+
+<div id="index" class="container">
+
+	<main class="content" role="main">
+		<!-- LOOP -->
+	</main>
+
+</div>
 
 {{template "footer.tpl.html" .}}
