@@ -1,7 +1,9 @@
 package main
 
 import (
+	"bytes"
 	"os"
+	"strings"
 	"text/template"
 	"time"
 )
@@ -34,7 +36,7 @@ type Post struct {
 	Url       string
 	Title     string
 	Authors   []string
-	Tags      []string
+	Tags      []Tag
 	Date      time.Time
 	PostClass string
 	Excerpt   string
@@ -59,12 +61,32 @@ type Inventory struct {
 	Site        Site
 }
 
+type Tag struct {
+	Name string
+	Slug string
+}
+
 func authorsFunc(authors []string) string {
 	return "My authors"
 }
 
-func tagsFunc(tags []string) string {
-	return "My tags"
+func tagsFunc(tags []Tag) string {
+	if len(tags) == 0 {
+		return ""
+	}
+
+	links := make([]string, len(tags))
+	for i, t := range tags {
+		var buffer bytes.Buffer
+		buffer.WriteString("<a href=\"")
+		buffer.WriteString("/tag/")
+		buffer.WriteString(t.Slug)
+		buffer.WriteString("/\">")
+		buffer.Write([]byte(t.Name))
+		buffer.WriteString("</a>")
+		links[i] = string(buffer.Bytes())
+	}
+	return "on " + strings.Join(links, ", ")
 }
 
 func dateFunc(date time.Time, format string) string {
@@ -136,12 +158,21 @@ func main() {
 			Posts: []Post{
 				Post{
 					Title:     "First post",
-					Url:       "/first",
+					Url:       siteUrl + "/first.html",
 					Authors:   []string{"Victor", "Sergey"},
-					Tags:      []string{"first", "post"},
+					Tags:      []Tag{Tag{"first", "first"}, Tag{"post", "post"}},
 					Date:      time.Now(),
 					PostClass: "post",
 					Excerpt:   "This is my short excerpt of the blog post",
+				},
+				Post{
+					Title:     "Second post",
+					Url:       siteUrl + "/second.html",
+					Authors:   []string{"Victor", "Sergey"},
+					Tags:      []Tag{Tag{"second", "second"}, Tag{"post", "post"}},
+					Date:      time.Now(),
+					PostClass: "post",
+					Excerpt:   "This is my longer excerpt of second blog post",
 				},
 			},
 		},
