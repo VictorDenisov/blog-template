@@ -33,16 +33,28 @@ type Link struct {
 	Url   string
 }
 
+type Author struct {
+	Name         string
+	Url          string
+	ProfileImage string
+	Bio          string
+	Location     string
+	Website      string
+	Twitter      string
+	Facebook     string
+}
+
 type Post struct {
 	Url          string
 	Title        string
-	Authors      []string
+	Authors      []Author
 	Tags         []Tag
 	Date         time.Time
 	PostClass    string
 	Excerpt      string
 	FeatureImage string
 	ReadingTime  int // minutes
+	Html         string
 }
 
 type Site struct {
@@ -57,6 +69,7 @@ type Site struct {
 	Posts       []Post
 	Post        Post
 }
+
 type Inventory struct {
 	Lang        string
 	MetaTitle   string
@@ -70,11 +83,15 @@ type Tag struct {
 	Slug string
 }
 
-func authorsFunc(authors []string) string {
-	return strings.Join(authors, ", ")
+func authorsFunc(authors []Author) string {
+	names := make([]string, len(authors))
+	for i, a := range authors {
+		names[i] = a.Name
+	}
+	return strings.Join(names, ", ")
 }
 
-func tagsFunc(tags []Tag) string {
+func tagsFunc(tags []Tag, prefix, separator string) string {
 	if len(tags) == 0 {
 		return ""
 	}
@@ -90,7 +107,7 @@ func tagsFunc(tags []Tag) string {
 		buffer.WriteString("</a>")
 		links[i] = string(buffer.Bytes())
 	}
-	return "on " + strings.Join(links, ", ")
+	return prefix + strings.Join(links, separator)
 }
 
 func dateFunc(date time.Time, format string) string {
@@ -129,28 +146,70 @@ func main() {
 
 	siteUrl := "file:///home/vdenisov/projects/blogTemplate"
 
+	victor := Author{
+		Name:     "Victor",
+		Bio:      "Victor's bio",
+		Location: "San Jose",
+		Website:  "denisov.io",
+		Twitter:  "VictorDenisov",
+		Facebook: "VictorFacebook",
+		Url:      siteUrl + "/author/victor",
+	}
+
+	sergey := Author{
+		Name:     "Sergey",
+		Bio:      "Sergey's bio",
+		Location: "Saratov",
+		Website:  "densovt.org",
+		Twitter:  "Serge",
+		Facebook: "SergeFacebook",
+		Url:      siteUrl + "/author/sergey",
+	}
+
 	posts := []Post{
 		Post{
 			Title:        "First post",
 			Url:          siteUrl + "/first.html",
-			Authors:      []string{"Victor", "Sergey"},
+			Authors:      []Author{victor},
 			Tags:         []Tag{Tag{"first", "first"}, Tag{"post", "post"}},
 			Date:         time.Now(),
 			PostClass:    "post",
 			Excerpt:      "This is my short excerpt of the blog post",
 			FeatureImage: "https://static.ghost.org/v2.0.0/images/writing-posts-with-ghost.jpg",
 			ReadingTime:  2,
+			Html: `
+</p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nam malesuada gravida orci vel vulputate. Nunc varius maximus ex consectetur rutrum. Quisque et placerat velit, sed accumsan nibh. In bibendum eros sed ante fringilla aliquam. Pellentesque id dolor ultricies, lobortis risus sit amet, ullamcorper mauris. Fusce tempor lorem id feugiat vulputate. Aliquam erat volutpat. Cras aliquet, nisl non fringilla tincidunt, dolor mi suscipit nunc, nec ultricies sapien orci nec augue. Duis consectetur lorem pellentesque neque tempor, vitae aliquam arcu scelerisque. Etiam aliquam libero id metus gravida, eu sagittis turpis pulvinar. Aenean nec tortor quis risus scelerisque vehicula sit amet nec enim. Vivamus varius enim maximus tempus viverra. Nunc at ligula vitae massa pretium scelerisque quis vel mauris.</p>
+
+</p>Quisque sit amet diam lorem. Sed venenatis pellentesque ipsum a sagittis. Donec arcu augue, bibendum et commodo quis, semper quis risus. Cras lorem nisl, auctor sit amet diam quis, facilisis molestie erat. Etiam auctor, dui a finibus ultricies, turpis odio consequat enim, a aliquam nulla est sed tellus. Ut elit ipsum, tincidunt ut felis ac, tristique tempor augue. Nam eu nisi at elit dictum aliquam ut in urna. Vestibulum sollicitudin erat massa, vel luctus neque blandit ut. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Donec volutpat dictum maximus. Ut ullamcorper nec lorem a imperdiet.</p>
+
+<p>Nullam ac libero dolor. Sed volutpat placerat nisl, vel cursus mauris fringilla ut. Praesent non malesuada urna. Donec metus tellus, aliquet ac dignissim a, elementum nec elit. Nam dictum, massa id euismod porttitor, felis mauris placerat enim, vitae scelerisque lorem mi in enim. Mauris justo diam, hendrerit et viverra tristique, accumsan nec nisl. Curabitur congue libero at lectus dapibus, sit amet accumsan nibh faucibus. Nulla aliquam imperdiet cursus. Fusce enim sapien, vehicula at fringilla vel, gravida sagittis mauris. Nunc commodo ante id sapien scelerisque, quis ultricies risus tempor. Proin lacinia, lorem sit amet gravida ullamcorper, nunc eros viverra arcu, vitae bibendum ex felis quis enim. Ut interdum convallis mi ac dapibus. Curabitur mollis volutpat purus vitae molestie.</p>
+
+<p>Aenean dignissim laoreet metus eu pretium. Nulla at est eu diam auctor aliquam. Phasellus eget odio ac ex euismod vestibulum at eu ligula. Nulla eu velit non massa venenatis mattis sed vehicula leo. Integer volutpat massa vitae lectus volutpat lobortis. Sed sed interdum lectus. Maecenas eu velit at mi vehicula venenatis. Curabitur in erat ac libero vestibulum ornare vel id felis. Morbi eu dictum magna. Sed in porttitor lorem, sed semper nunc. Curabitur sollicitudin sodales lectus at aliquam. Sed eu velit vel orci pulvinar tempus sit amet at libero. Praesent imperdiet interdum pretium. Praesent ultrices facilisis enim, in volutpat ex volutpat ac.</p>
+
+<p>Nulla facilisi. Cras suscipit tempor nisl in porttitor. Integer vel tempus nisi, in posuere urna. Duis ut est vel eros varius faucibus. Vestibulum a nisl sed urna tincidunt posuere at sed dui. In convallis rhoncus ex non consequat. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Nam eleifend ut magna quis dignissim. Fusce sodales est sit amet posuere facilisis. Sed viverra mollis odio, nec bibendum quam efficitur eget. Aliquam lacus dolor, dapibus et purus ac, congue tempus mauris. Pellentesque sed blandit justo. Ut varius erat in nunc dictum, ullamcorper cursus ante sagittis. Aenean tempus nunc quis arcu ultricies, ac suscipit lacus porttitor. Phasellus maximus, justo at vehicula hendrerit, augue erat pulvinar est, ut rutrum odio arcu et ex. Nunc cursus euismod mattis.</p>
+			`,
 		},
 		Post{
 			Title:        "Second post",
 			Url:          siteUrl + "/second.html",
-			Authors:      []string{"Victor", "Sergey"},
+			Authors:      []Author{victor, sergey},
 			Tags:         []Tag{Tag{"second", "second"}, Tag{"post", "post"}},
 			Date:         time.Now(),
 			PostClass:    "post",
 			Excerpt:      "This is my longer excerpt of second blog post",
 			FeatureImage: "https://static.ghost.org/v2.0.0/images/writing-posts-with-ghost.jpg",
 			ReadingTime:  5,
+			Html: `
+</p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nam malesuada gravida orci vel vulputate. Nunc varius maximus ex consectetur rutrum. Quisque et placerat velit, sed accumsan nibh. In bibendum eros sed ante fringilla aliquam. Pellentesque id dolor ultricies, lobortis risus sit amet, ullamcorper mauris. Fusce tempor lorem id feugiat vulputate. Aliquam erat volutpat. Cras aliquet, nisl non fringilla tincidunt, dolor mi suscipit nunc, nec ultricies sapien orci nec augue. Duis consectetur lorem pellentesque neque tempor, vitae aliquam arcu scelerisque. Etiam aliquam libero id metus gravida, eu sagittis turpis pulvinar. Aenean nec tortor quis risus scelerisque vehicula sit amet nec enim. Vivamus varius enim maximus tempus viverra. Nunc at ligula vitae massa pretium scelerisque quis vel mauris.</p>
+
+</p>Quisque sit amet diam lorem. Sed venenatis pellentesque ipsum a sagittis. Donec arcu augue, bibendum et commodo quis, semper quis risus. Cras lorem nisl, auctor sit amet diam quis, facilisis molestie erat. Etiam auctor, dui a finibus ultricies, turpis odio consequat enim, a aliquam nulla est sed tellus. Ut elit ipsum, tincidunt ut felis ac, tristique tempor augue. Nam eu nisi at elit dictum aliquam ut in urna. Vestibulum sollicitudin erat massa, vel luctus neque blandit ut. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Donec volutpat dictum maximus. Ut ullamcorper nec lorem a imperdiet.</p>
+
+<p>Nullam ac libero dolor. Sed volutpat placerat nisl, vel cursus mauris fringilla ut. Praesent non malesuada urna. Donec metus tellus, aliquet ac dignissim a, elementum nec elit. Nam dictum, massa id euismod porttitor, felis mauris placerat enim, vitae scelerisque lorem mi in enim. Mauris justo diam, hendrerit et viverra tristique, accumsan nec nisl. Curabitur congue libero at lectus dapibus, sit amet accumsan nibh faucibus. Nulla aliquam imperdiet cursus. Fusce enim sapien, vehicula at fringilla vel, gravida sagittis mauris. Nunc commodo ante id sapien scelerisque, quis ultricies risus tempor. Proin lacinia, lorem sit amet gravida ullamcorper, nunc eros viverra arcu, vitae bibendum ex felis quis enim. Ut interdum convallis mi ac dapibus. Curabitur mollis volutpat purus vitae molestie.</p>
+
+<p>Aenean dignissim laoreet metus eu pretium. Nulla at est eu diam auctor aliquam. Phasellus eget odio ac ex euismod vestibulum at eu ligula. Nulla eu velit non massa venenatis mattis sed vehicula leo. Integer volutpat massa vitae lectus volutpat lobortis. Sed sed interdum lectus. Maecenas eu velit at mi vehicula venenatis. Curabitur in erat ac libero vestibulum ornare vel id felis. Morbi eu dictum magna. Sed in porttitor lorem, sed semper nunc. Curabitur sollicitudin sodales lectus at aliquam. Sed eu velit vel orci pulvinar tempus sit amet at libero. Praesent imperdiet interdum pretium. Praesent ultrices facilisis enim, in volutpat ex volutpat ac.</p>
+
+<p>Nulla facilisi. Cras suscipit tempor nisl in porttitor. Integer vel tempus nisi, in posuere urna. Duis ut est vel eros varius faucibus. Vestibulum a nisl sed urna tincidunt posuere at sed dui. In convallis rhoncus ex non consequat. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Nam eleifend ut magna quis dignissim. Fusce sodales est sit amet posuere facilisis. Sed viverra mollis odio, nec bibendum quam efficitur eget. Aliquam lacus dolor, dapibus et purus ac, congue tempus mauris. Pellentesque sed blandit justo. Ut varius erat in nunc dictum, ullamcorper cursus ante sagittis. Aenean tempus nunc quis arcu ultricies, ac suscipit lacus porttitor. Phasellus maximus, justo at vehicula hendrerit, augue erat pulvinar est, ut rutrum odio arcu et ex. Nunc cursus euismod mattis.</p>
+			`,
 		},
 	}
 
