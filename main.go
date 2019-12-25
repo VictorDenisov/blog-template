@@ -67,7 +67,7 @@ type Tag struct {
 }
 
 func authorsFunc(authors []string) string {
-	return "My authors"
+	return strings.Join(authors, ", ")
 }
 
 func tagsFunc(tags []Tag) string {
