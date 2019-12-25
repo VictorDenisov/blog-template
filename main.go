@@ -3,6 +3,7 @@ package main
 import (
 	"os"
 	"text/template"
+	"time"
 )
 
 func assetFunc(path string) string {
@@ -29,6 +30,16 @@ type Link struct {
 	Url   string
 }
 
+type Post struct {
+	Url       string
+	Title     string
+	Authors   []string
+	Tags      []string
+	Date      time.Time
+	PostClass string
+	Excerpt   string
+}
+
 type Site struct {
 	Url         string
 	Title       string
@@ -38,6 +49,7 @@ type Site struct {
 	Twitter     *Link
 	Github      *Link
 	Navigation  []NavItem
+	Posts       []Post
 }
 type Inventory struct {
 	Lang        string
@@ -47,17 +59,36 @@ type Inventory struct {
 	Site        Site
 }
 
+func authorsFunc(authors []string) string {
+	return "My authors"
+}
+
+func tagsFunc(tags []string) string {
+	return "My tags"
+}
+
+func dateFunc(date time.Time, format string) string {
+	return "My Date"
+}
+
 func main() {
 	funcMap := map[string]interface{}{
 		"asset":      assetFunc,
 		"body_class": body_classFunc,
 		"img_url":    img_urlFunc,
+		"authors":    authorsFunc,
+		"tags":       tagsFunc,
+		"date":       dateFunc,
 	}
 	header, err := template.New("header.tpl.html").Funcs(funcMap).ParseFiles("header.tpl.html")
 	if err != nil {
 		panic(err)
 	}
 	footer, err := template.New("footer.tpl.html").Funcs(funcMap).ParseFiles("footer.tpl.html")
+	if err != nil {
+		panic(err)
+	}
+	loop, err := template.New("loop.tpl.html").Funcs(funcMap).ParseFiles("loop.tpl.html")
 	if err != nil {
 		panic(err)
 	}
@@ -102,12 +133,24 @@ func main() {
 					Current: false,
 				},
 			},
+			Posts: []Post{
+				Post{
+					Title:     "First post",
+					Url:       "/first",
+					Authors:   []string{"Victor", "Sergey"},
+					Tags:      []string{"first", "post"},
+					Date:      time.Now(),
+					PostClass: "post",
+					Excerpt:   "This is my short excerpt of the blog post",
+				},
+			},
 		},
 	}
 	tmpl, err := template.New("index.tpl.html").Funcs(funcMap).ParseFiles("index.tpl.html")
 
 	tmpl.AddParseTree("header.tpl.html", header.Tree)
 	tmpl.AddParseTree("footer.tpl.html", footer.Tree)
+	tmpl.AddParseTree("loop.tpl.html", loop.Tree)
 	if err != nil {
 		panic(err)
 	}
