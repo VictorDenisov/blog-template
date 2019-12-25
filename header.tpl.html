@@ -21,6 +21,9 @@
 		<div class="nav-wrapper">
 			<p class="nav-label">Menu</p>
 			<ul>
+			{{range .Site.Navigation}}
+			<li class="nav-{{.Slug}}{{if .Current}} active{{end}}" role="presentation"><a href="{{.Url}}">{{.Label}}</a></li>
+			{{end}}
 			{{if .Site.Twitter}}
 			<li class="nav-twitter"><a href="{{.Site.Twitter.Url}}" title="{{.Site.Twitter.Title}}"><i class="ic ic-twitter"></i> Twitter</a></li>
 			{{end}}

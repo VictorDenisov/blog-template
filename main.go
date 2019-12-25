@@ -62,6 +62,13 @@ func img_urlFunc(url string, size string) string {
 }
 
 func main() {
+	type NavItem struct {
+		Slug    string
+		Url     string
+		Label   string
+		Current bool
+	}
+
 	type Link struct {
 		Title string
 		Url   string
@@ -73,9 +80,9 @@ func main() {
 		Description string
 		CoverImage  string
 		Logo        string
-		Navigation  string
 		Twitter     *Link
 		Github      *Link
+		Navigation  []NavItem
 	}
 	type Inventory struct {
 		Lang        string
@@ -99,17 +106,18 @@ func main() {
 		panic(err)
 	}
 
+	siteUrl := "file:///home/vdenisov/projects/blogTemplate"
+
 	sweaters := Inventory{
 		Lang:        "eng",
 		MetaTitle:   "meta title",
-		BlogUrl:     "http://localhost",
+		BlogUrl:     siteUrl + "/index.html",
 		CurrentPath: "/",
 		Site: Site{
-			Url:         "file:///home/vdenisov/projects/blogTemplate/index.html",
+			Url:         siteUrl + "/index.html",
 			Title:       "Victor's blog",
 			Description: "This is Victor's blog",
 			CoverImage:  "https://static.ghost.org/v2.0.0/images/welcome-to-ghost.jpg",
-			Navigation:  "victor's navigation",
 			Twitter: &Link{
 				Title: "@VictorDenisov",
 				Url:   "https://twitter.com/victordenisov",
@@ -117,6 +125,26 @@ func main() {
 			Github: &Link{
 				Title: "VictorDenisov",
 				Url:   "https://github.com/VictorDenisov",
+			},
+			Navigation: []NavItem{
+				NavItem{
+					Slug:    "home",
+					Url:     siteUrl + "/home",
+					Label:   "Home",
+					Current: true,
+				},
+				NavItem{
+					Slug:    "tag",
+					Url:     siteUrl + "/tag",
+					Label:   "Tag",
+					Current: false,
+				},
+				NavItem{
+					Slug:    "author",
+					Url:     siteUrl + "/author",
+					Label:   "Author",
+					Current: false,
+				},
 			},
 		},
 	}
