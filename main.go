@@ -2,6 +2,7 @@ package main
 
 import (
 	"bytes"
+	"fmt"
 	"os"
 	"strings"
 	"text/template"
@@ -33,13 +34,15 @@ type Link struct {
 }
 
 type Post struct {
-	Url       string
-	Title     string
-	Authors   []string
-	Tags      []Tag
-	Date      time.Time
-	PostClass string
-	Excerpt   string
+	Url          string
+	Title        string
+	Authors      []string
+	Tags         []Tag
+	Date         time.Time
+	PostClass    string
+	Excerpt      string
+	FeatureImage string
+	ReadingTime  int // minutes
 }
 
 type Site struct {
@@ -52,6 +55,7 @@ type Site struct {
 	Github      *Link
 	Navigation  []NavItem
 	Posts       []Post
+	Post        Post
 }
 type Inventory struct {
 	Lang        string
@@ -93,14 +97,22 @@ func dateFunc(date time.Time, format string) string {
 	return "My Date"
 }
 
+func reading_timeFunc(minutes int) string {
+	if minutes == 1 {
+		return "1 minute"
+	}
+	return fmt.Sprintf("%d min read", minutes)
+}
+
 func main() {
 	funcMap := map[string]interface{}{
-		"asset":      assetFunc,
-		"body_class": body_classFunc,
-		"img_url":    img_urlFunc,
-		"authors":    authorsFunc,
-		"tags":       tagsFunc,
-		"date":       dateFunc,
+		"asset":        assetFunc,
+		"body_class":   body_classFunc,
+		"img_url":      img_urlFunc,
+		"authors":      authorsFunc,
+		"tags":         tagsFunc,
+		"date":         dateFunc,
+		"reading_time": reading_timeFunc,
 	}
 	header, err := template.New("header.tpl.html").Funcs(funcMap).ParseFiles("header.tpl.html")
 	if err != nil {
@@ -116,6 +128,31 @@ func main() {
 	}
 
 	siteUrl := "file:///home/vdenisov/projects/blogTemplate"
+
+	posts := []Post{
+		Post{
+			Title:        "First post",
+			Url:          siteUrl + "/first.html",
+			Authors:      []string{"Victor", "Sergey"},
+			Tags:         []Tag{Tag{"first", "first"}, Tag{"post", "post"}},
+			Date:         time.Now(),
+			PostClass:    "post",
+			Excerpt:      "This is my short excerpt of the blog post",
+			FeatureImage: "https://static.ghost.org/v2.0.0/images/writing-posts-with-ghost.jpg",
+			ReadingTime:  2,
+		},
+		Post{
+			Title:        "Second post",
+			Url:          siteUrl + "/second.html",
+			Authors:      []string{"Victor", "Sergey"},
+			Tags:         []Tag{Tag{"second", "second"}, Tag{"post", "post"}},
+			Date:         time.Now(),
+			PostClass:    "post",
+			Excerpt:      "This is my longer excerpt of second blog post",
+			FeatureImage: "https://static.ghost.org/v2.0.0/images/writing-posts-with-ghost.jpg",
+			ReadingTime:  5,
+		},
+	}
 
 	sweaters := Inventory{
 		Lang:        "eng",
@@ -155,38 +192,52 @@ func main() {
 					Current: false,
 				},
 			},
-			Posts: []Post{
-				Post{
-					Title:     "First post",
-					Url:       siteUrl + "/first.html",
-					Authors:   []string{"Victor", "Sergey"},
-					Tags:      []Tag{Tag{"first", "first"}, Tag{"post", "post"}},
-					Date:      time.Now(),
-					PostClass: "post",
-					Excerpt:   "This is my short excerpt of the blog post",
-				},
-				Post{
-					Title:     "Second post",
-					Url:       siteUrl + "/second.html",
-					Authors:   []string{"Victor", "Sergey"},
-					Tags:      []Tag{Tag{"second", "second"}, Tag{"post", "post"}},
-					Date:      time.Now(),
-					PostClass: "post",
-					Excerpt:   "This is my longer excerpt of second blog post",
-				},
-			},
+			Posts: posts,
+			Post:  posts[0],
 		},
 	}
-	tmpl, err := template.New("index.tpl.html").Funcs(funcMap).ParseFiles("index.tpl.html")
-
-	tmpl.AddParseTree("header.tpl.html", header.Tree)
-	tmpl.AddParseTree("footer.tpl.html", footer.Tree)
-	tmpl.AddParseTree("loop.tpl.html", loop.Tree)
+	// Index template
+	indexTmpl, err := template.New("index.tpl.html").Funcs(funcMap).ParseFiles("index.tpl.html")
 	if err != nil {
 		panic(err)
 	}
-	err = tmpl.Execute(os.Stdout, sweaters)
+
+	indexTmpl.AddParseTree("header.tpl.html", header.Tree)
+	indexTmpl.AddParseTree("footer.tpl.html", footer.Tree)
+	indexTmpl.AddParseTree("loop.tpl.html", loop.Tree)
+
+	indexFile, err := os.OpenFile("index.html", os.O_RDWR|os.O_CREATE, 0755)
 	if err != nil {
+		panic(err)
+	}
+	err = indexTmpl.Execute(indexFile, sweaters)
+	if err != nil {
+		panic(err)
+	}
+	if err := indexFile.Close(); err != nil {
+		panic(err)
+	}
+
+	// First post template
+	postTmpl, err := template.New("post.tpl.html").Funcs(funcMap).ParseFiles("post.tpl.html")
+	if err != nil {
+		panic(err)
+	}
+
+	postTmpl.AddParseTree("header.tpl.html", header.Tree)
+	postTmpl.AddParseTree("footer.tpl.html", footer.Tree)
+	postTmpl.AddParseTree("loop.tpl.html", loop.Tree)
+
+	postFile, err := os.OpenFile("first.html", os.O_RDWR|os.O_CREATE, 0755)
+	if err != nil {
+		panic(err)
+	}
+
+	err = postTmpl.Execute(postFile, sweaters)
+	if err != nil {
+		panic(err)
+	}
+	if err := postFile.Close(); err != nil {
 		panic(err)
 	}
 }

@@ -1,0 +1,41 @@
+{{template "header.tpl.html" .}}
+
+<div class="progress-container">
+	<span class="progress-bar"></span>
+</div>
+
+<header id="post-header"{{if .Site.Post.FeatureImage}} class="has-cover" {{end}}>
+	<div class="inner">
+		<nav id="navigation">
+			{{if .Site.Logo}}
+			<span class="blog-logo">
+				<a href="{{.Site.Url}}"><img src="{{.Site.Logo}}" alt="Blog Logo" /></a>
+			</span>
+			{{else}}
+			<span id="home-button" class="nav-button">
+				<a class="home-button" href="{{.Site.Url}}" title="Home"><i class="ic ic-arrow-left"></i>Home</a>
+			</span>
+			{{end}}
+			{{if .Site.Navigation}}
+			<span id="menu-button" class="nav-button">
+				<a class="menu-button"><i class="ic ic-menu"></i>Menu</a>
+			</span>
+			{{end}}
+		</nav>
+		<h1 class="post-title">{{.Site.Post.Title}}</h1>
+		<span class="post-meta">{{authors .Site.Post.Authors}} | <time datetime="{{date .Site.Post.Date "YYYY-MM-DD"}}">{{date .Site.Post.Date "DD MMM YYYY"}}</time> | {{reading_time .Site.Post.ReadingTime}}</span>
+		{{if .Site.Post.FeatureImage}}
+		<div class="post-cover cover">
+			<img
+			srcset="{{img_url .Site.Post.FeatureImage "s"}} 320w,
+			        {{img_url .Site.Post.FeatureImage "m"}} 640w,
+			        {{img_url .Site.Post.FeatureImage "l"}} 960w,
+			        {{img_url .Site.Post.FeatureImage "xl"}} 1920w"
+			src="{{img_url .Site.Post.FeatureImage "xl"}}"
+			alt="{{.Site.Post.Title}}" />
+		</div>
+		{{end}}
+	</div>
+</header>
+
+{{template "footer.tpl.html" .}}
