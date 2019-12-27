@@ -142,6 +142,9 @@ Aenean dignissim laoreet metus eu pretium. Nulla at est eu diam auctor aliquam. 
 Nulla facilisi. Cras suscipit tempor nisl in porttitor. Integer vel tempus nisi, in posuere urna. Duis ut est vel eros varius faucibus. Vestibulum a nisl sed urna tincidunt posuere at sed dui. In convallis rhoncus ex non consequat. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Nam eleifend ut magna quis dignissim. Fusce sodales est sit amet posuere facilisis. Sed viverra mollis odio, nec bibendum quam efficitur eget. Aliquam lacus dolor, dapibus et purus ac, congue tempus mauris. Pellentesque sed blandit justo. Ut varius erat in nunc dictum, ullamcorper cursus ante sagittis. Aenean tempus nunc quis arcu ultricies, ac suscipit lacus porttitor. Phasellus maximus, justo at vehicula hendrerit, augue erat pulvinar est, ut rutrum odio arcu et ex. Nunc cursus euismod mattis.
 `
 
+//const code = "\n```go\nfunc getTrue() bool {\n\treturn true\n}```\n"
+const code = "```go\nfunc getTrue() {\n\tfor {\n\t\tfmt.Printf(\"%v\", x)\n\t}\n}\n```"
+
 func main() {
 	funcMap := map[string]interface{}{
 		"asset":        assetFunc,
@@ -198,7 +201,7 @@ func main() {
 			Excerpt:      "This is my short excerpt of the blog post",
 			FeatureImage: "https://static.ghost.org/v2.0.0/images/writing-posts-with-ghost.jpg",
 			ReadingTime:  2,
-			Html:         renderMarkdown(text),
+			Html:         renderMarkdown(text + code),
 		},
 		Post{
 			Title:        "Second post",
@@ -210,7 +213,7 @@ func main() {
 			Excerpt:      "This is my longer excerpt of second blog post",
 			FeatureImage: "https://static.ghost.org/v2.0.0/images/writing-posts-with-ghost.jpg",
 			ReadingTime:  5,
-			Html:         renderMarkdown(text),
+			Html:         renderMarkdown(text + code),
 		},
 	}
 
