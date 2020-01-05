@@ -3,9 +3,9 @@ package main
 import (
 	"bytes"
 	"fmt"
+	"html/template"
 	"os"
 	"strings"
-	"text/template"
 	"time"
 
 	"github.com/gomarkdown/markdown"
@@ -94,7 +94,7 @@ func authorsFunc(authors []Author) string {
 	return strings.Join(names, ", ")
 }
 
-func tagsFunc(tags []Tag, prefix, separator string) string {
+func tagsFunc(tags []Tag, prefix, separator string) template.HTML {
 	if len(tags) == 0 {
 		return ""
 	}
@@ -104,13 +104,13 @@ func tagsFunc(tags []Tag, prefix, separator string) string {
 		var buffer bytes.Buffer
 		buffer.WriteString("<a href=\"")
 		buffer.WriteString("/tag/")
-		buffer.WriteString(t.Slug)
+		buffer.WriteString(template.HTMLEscapeString(t.Slug))
 		buffer.WriteString("/\">")
-		buffer.Write([]byte(t.Name))
+		buffer.Write([]byte(template.HTMLEscapeString(t.Name)))
 		buffer.WriteString("</a>")
 		links[i] = string(buffer.Bytes())
 	}
-	return prefix + strings.Join(links, separator)
+	return template.HTML(prefix + strings.Join(links, separator))
 }
 
 func dateFunc(date time.Time, format string) string {
